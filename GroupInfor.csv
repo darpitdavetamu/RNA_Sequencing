@@ -1,0 +1,28 @@
+Sample	Group	Age	Sex	Histology	Activity Score	Fibrosis Score	Hepatocellular Vacuolation Score
+1WV	Control	0.5	F	Normal	0	0	0
+2CW	Control	1	F	Normal	0	0	1
+3RY	Control	5	F	Normal	0	0	0
+4MH	Control	0.5	F	Normal	0	0	0
+5SW	Control	1	F	Normal	0	0	1
+6_1PH	Control	2	F	Normal	0	0	2
+7_1GG	Control	6	F	Normal	0	1	0
+8CB	Control	5	F	Normal	0	0	2
+9CW	Control	3	F	Normal	0	0	0
+10_1KD	Control	0.5	F	Normal	0	0	2
+11DA_H	Control	1	F	Normal	0	0	0
+12_2SST	Control	0.5	F	Normal	0	0	0
+1_1PP	Chronic Hepatitis	11	F	Copper Associated	2	1	1
+4HB	Chronic Hepatitis	11	F	Idiopathic	3	3	2
+6SB	Chronic Hepatitis	7	M	Idiopathic	2	1	3
+7GH	Chronic Hepatitis	8	M	Idiopathic	2	2	1
+8RP	Chronic Hepatitis	11	F	Idiopathic	2	2	2
+9CG	Chronic Hepatitis	3	M	Idiopathic	0	0	0
+10TB	Chronic Hepatitis	13	F	Copper Associated			
+11SLS	Chronic Hepatitis	4	F	Idiopathic			
+12HR	Chronic Hepatitis	6	M	Idiopathic	1	3	0
+13MF	Chronic Hepatitis	14	M	Idiopathic	0	3	3
+15BB	Chronic Hepatitis	5	M	Copper Associated	2	2	2
+16_2BP	Chronic Hepatitis	2	M	Idiopathic	3	2	2
+17LB	Chronic Hepatitis	9	F	Idiopathic	1	4	0
+18TD	Chronic Hepatitis	10	F	Idiopathic	3	3	0
+JB1	Chronic Hepatitis	10	F	Idiopathic	3	2	2

@@ -1,0 +1,512 @@
+setwd("/Users/darpitdave/Downloads")
+DTA <- read.csv("happiness.csv")
+n <- nrow(DTA)
+colnames(DTA) <- c("Country", "Region", "Religion", "Religious",
+"Economy", "Family", "Health", "Freedom", "Trust", "Generosity",
+"Dystopia")
+fit <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA)
+y_hat <- predict(fit, newdata = DTA)
+plot(DTA$Dystopia, y_hat)
+abline(0, 1)
+lines(lowess(DTA$Dystopia, y_hat), col = "blue")
+par(mfrow=c(1,1))
+y_hat <- predict(fit, newdata = DTA)
+plot(DTA$Dystopia, y_hat)
+abline(0, 1)
+lines(lowess(DTA$Dystopia, y_hat), col = "blue")
+library(Metrics)
+ee <- fit$residuals
+mse_hat <- mean(ee ^ 2)
+mse_hat_cv <- numeric(n)
+for(i in 1:n) {
+cat(i)
+## Temporary train / test split.
+#DTA_te <- as.data.frame(DTA[i, ])
+DTA_te <- DTA[i, , drop = FALSE]
+DTA_tr <- DTA[-i, ]
+## Use training data to fit model, get predictions, and compute MSE.
+fit_cv <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA_tr)
+y_hat_cv <- predict(fit_cv, newdata = DTA_te)
+ee_cv <- DTA_te$Dystopia - y_hat_cv
+mse_hat_cv[i] <- mean(ee_cv ^ 2)
+}
+mse_overall_cv <- mean(mse_hat_cv)
+B <- 500
+mse_hat_boot <- numeric(B)
+for(b in 1:B) {
+## Sample WR from training data.
+DTA_boot <- DTA[sample(1:n, replace = TRUE), ]
+## Fit model and record MSE estimate.
+fit_boot <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA_boot)
+y_hat_boot <- predict(fit_boot, newdata = DTA_boot)
+ee_boot <- DTA_boot$Dystopia - y_hat_boot
+mse_hat_boot[b] <- mean(ee_boot ^ 2)
+}
+sd_mse_hat <- sd(mse_hat_boot)
+Y<-DTA$Dystopia
+X<-cas.matrix(dta[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+X<-as.matrix(dta[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+X<-as.matrix(DTA[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+fit_lasso_cv<-cv.glmnet(X,Y,family='gaussian')
+fit_lasso_cv$lambda
+fit_lasso_cv$cvm
+fit_lasso_cv$lambda[which.max(fit_lasso_cv$cvm)]
+which.max(fit_lasso_cv$cvm)
+max(fit_lasso_cv$lambda)
+fit_lasso_cv$lambda[which.min(fit_lasso_cv$cvm)]
+fit_lasso_cv$lambda.min
+fit_lasso_cv$nzero
+fit_lasso_cv$lambda
+fit_lasso <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+fit_lasso$beta[, 1]
+y_hat_lasso <- predict(fit_lasso, newx = X, s = fit_lasso_cv$lambda.min)
+y_hat_lasso
+fit_lasso$lambda
+fit_lasso$beta[, 1]
+fit_lasso$beta
+fit_lasso$beta[]
+fit_lasso$beta[,1]
+fit_lasso$beta[,2]
+dim(fit_lasso$beta)
+fit_lasso$lambda.min
+fit_lasso$lambda
+fit_lasso$lambda.min[1]
+MSE_lasso_cv_i <- numeric(n)
+for(i in 1:n) {
+## Temporary train / test split.
+X_te<-DTA[i, ,drop=FALSE]
+Y_te<-DTA[i]
+X_tr<-DTA[-i,]
+Y_tr<-DTA[-i]
+fit_lasso_loocv<-glmnet(X_tr,Y_tr,family = 'gaussian',lambda=fit_lasso_cv$lambda)
+y_hat_lasso_loocv<-predict(fit_lasso_loocv,newx=X_te,s=fit_lasso_loocv$lambda.min)[1]
+MSE_lasso_loocv[i]<-(y_hat_lasso_loocv-Y_te)^2
+}
+fit_lasso <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+fit_lasso$beta[, 1]
+y_hat_lasso <- predict(fit_lasso, newx = X, s = fit_lasso_cv$lambda.min)
+y_hat_lasso
+MSE_lasso_cv_i <- numeric(n)
+for(i in 1:n) {
+## Temporary train / test split.
+X_te<-DTA[i, ,drop=FALSE]
+Y_te<-DTA[i]
+X_tr<-DTA[-i,]
+Y_tr<-DTA[-i]
+fit_lasso_loocv<-glmnet(X_tr,Y_tr,family = 'gaussian',lambda=fit_lasso_cv$lambda)
+y_hat_lasso_loocv<-predict(fit_lasso_loocv,newx=X_te,s=fit_lasso_loocv$lambda.min)[1]
+MSE_lasso_loocv[i]<-(y_hat_lasso_loocv-Y_te)^2
+}
+for(i in 1:n) {
+## Temporary train / test split.
+X_te<-X[i, ,drop=FALSE]
+Y_te<-Y[i]
+X_tr<-X[-i,]
+Y_tr<-Y[-i]
+fit_lasso_loocv<-glmnet(X_tr,Y_tr,family = 'gaussian',lambda=fit_lasso_cv$lambda)
+y_hat_lasso_loocv<-predict(fit_lasso_loocv,newx=X_te,s=fit_lasso_loocv$lambda.min)[1]
+MSE_lasso_loocv[i]<-(y_hat_lasso_loocv-Y_te)^2
+}
+MSE_lasso_loocv <- numeric(n)
+for(i in 1:n) {
+## Temporary train / test split.
+X_te<-X[i, ,drop=FALSE]
+Y_te<-Y[i]
+X_tr<-X[-i,]
+Y_tr<-Y[-i]
+fit_lasso_loocv<-glmnet(X_tr,Y_tr,family = 'gaussian',lambda=fit_lasso_cv$lambda)
+y_hat_lasso_loocv<-predict(fit_lasso_loocv,newx=X_te,s=fit_lasso_loocv$lambda.min)[1]
+MSE_lasso_loocv[i]<-(y_hat_lasso_loocv-Y_te)^2
+}
+MSE_lasso
+MSE_lasso<-mean(MSE_lasso_loocv)
+MSE_lasso
+rm(list=ls())
+DTA <- read.csv("happiness.csv")
+n <- nrow(DTA)
+colnames(DTA) <- c("Country", "Region", "Religion", "Religious",
+"Economy", "Family", "Health", "Freedom", "Trust", "Generosity",
+"Dystopia")
+fit <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA)
+y_hat <- predict(fit, newdata = DTA)
+plot(DTA$Dystopia, y_hat)
+abline(0, 1)
+lines(lowess(DTA$Dystopia, y_hat), col = "blue")
+library(Metrics)
+ee <- fit$residuals
+mse_hat <- mean(ee ^ 2)
+for(i in 1:n) {
+## Temporary train / test split.
+#DTA_te <- as.data.frame(DTA[i, ])
+DTA_te <- DTA[i, , drop = FALSE]
+DTA_tr <- DTA[-i, ]
+## Use training data to fit model, get predictions, and compute MSE.
+fit_cv <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA_tr)
+y_hat_cv <- predict(fit_cv, newdata = DTA_te)
+ee_cv <- DTA_te$Dystopia - y_hat_cv
+mse_hat_cv[i] <- mean(ee_cv ^ 2)
+}
+mse_hat_cv <- numeric(n)
+for(i in 1:n) {
+## Temporary train / test split.
+#DTA_te <- as.data.frame(DTA[i, ])
+DTA_te <- DTA[i, , drop = FALSE]
+DTA_tr <- DTA[-i, ]
+## Use training data to fit model, get predictions, and compute MSE.
+fit_cv <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA_tr)
+y_hat_cv <- predict(fit_cv, newdata = DTA_te)
+ee_cv <- DTA_te$Dystopia - y_hat_cv
+mse_hat_cv[i] <- mean(ee_cv ^ 2)
+}
+mse_overall_cv <- mean(mse_hat_cv)
+mse_overall_cv
+B <- 500
+mse_hat_boot <- numeric(B)
+for(b in 1:B) {
+## Sample WR from training data.
+DTA_boot <- DTA[sample(1:n, replace = TRUE), ]
+## Fit model and record MSE estimate.
+fit_boot <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA_boot)
+y_hat_boot <- predict(fit_boot, newdata = DTA_boot)
+ee_boot <- DTA_boot$Dystopia - y_hat_boot
+mse_hat_boot[b] <- mean(ee_boot ^ 2)
+}
+sd_mse_hat <- sd(mse_hat_boot)
+sd_mse_hat
+Y<-DTA$Dystopia
+X<-as.matrix(DTA[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+fit_lasso_cv<-cv.glmnet(X,Y,family='gaussian')
+fit_lasso_cv$lambda.min
+fit_lasso_cv$lambda
+which.min
+which.min(lasso_cv_lambda)
+which.min(fit_lasso_cv$lambda)
+fit_lasso_cv$lambda
+fit_lasso <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+fit_lasso$beta[, 1]
+y_hat_lasso <- predict(fit_lasso, newx = X, s = fit_lasso_cv$lambda.min)
+MSE_lasso_loocv <- numeric(n)
+rm(list=ls())
+DTA <- read.csv("happiness.csv")
+n <- nrow(DTA)
+colnames(DTA) <- c("Country", "Region", "Religion", "Religious",
+"Economy", "Family", "Health", "Freedom", "Trust", "Generosity",
+"Dystopia")
+fit <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA)
+y_hat <- predict(fit, newdata = DTA)
+plot(DTA$Dystopia, y_hat)
+abline(0, 1)
+lines(lowess(DTA$Dystopia, y_hat), col = "blue")
+library(Metrics)
+ee <- fit$residuals
+mse_hat <- mean(ee ^ 2)
+mse_hat_cv <- numeric(n)
+for(i in 1:n) {
+## Temporary train / test split.
+#DTA_te <- as.data.frame(DTA[i, ])
+DTA_te <- DTA[i, , drop = FALSE]
+DTA_tr <- DTA[-i, ]
+## Use training data to fit model, get predictions, and compute MSE.
+fit_cv <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA_tr)
+y_hat_cv <- predict(fit_cv, newdata = DTA_te)
+ee_cv <- DTA_te$Dystopia - y_hat_cv
+mse_hat_cv[i] <- mean(ee_cv ^ 2)
+}
+mse_overall_cv <- mean(mse_hat_cv)
+B <- 500
+mse_hat_boot <- numeric(B)
+for(b in 1:B) {
+## Sample WR from training data.
+DTA_boot <- DTA[sample(1:n, replace = TRUE), ]
+## Fit model and record MSE estimate.
+fit_boot <- lm(Dystopia ~ Economy + Family + Health + Freedom +
+Trust + Generosity, data = DTA_boot)
+y_hat_boot <- predict(fit_boot, newdata = DTA_boot)
+ee_boot <- DTA_boot$Dystopia - y_hat_boot
+mse_hat_boot[b] <- mean(ee_boot ^ 2)
+}
+sd_mse_hat <- sd(mse_hat_boot)
+Y<-DTA$Dystopia
+X<-as.matrix(DTA[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+fit_lasso_cv<-cv.glmnet(X,Y,family='gaussian')
+fit_lasso_cv$lambda.min
+fit_lasso_cv$nzero
+fit_lasso <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+fit_lasso$beta[, 1]
+y_hat_lasso <- predict(fit_lasso, newx = X, s = fit_lasso_cv$lambda.min)
+MSE_lasso_loocv <- numeric(n)
+for(i in 1:n) {
+## Temporary train / test split.
+X_te<-X[i, ,drop=FALSE]
+Y_te<-Y[i]
+X_tr<-X[-i,]
+Y_tr<-Y[-i]
+fit_lasso_loocv<-glmnet(X_tr,Y_tr,family = 'gaussian',lambda=fit_lasso_cv$lambda)
+y_hat_lasso_loocv<-predict(fit_lasso_loocv,newx=X_te,s=fit_lasso_loocv$lambda.min)[1]
+MSE_lasso_loocv[i]<-(y_hat_lasso_loocv-Y_te)^2
+}
+MSE_lasso<-mean(MSE_lasso_loocv)
+B <- 1000
+mse_hat_loocv_boot <- numeric(B)
+for(b in 1:B) {
+## Sample WR from training data.
+DTA_boot_b <- sample(1:n, replace = TRUE)
+Y_b<-Y[DTA_boot_b]
+X_b<-X[DTA_boot_b,]
+fit_lasso_boot<-glmnet(X_b,Y_b,lambda=fit_lasso_cv$lambda,family='gaussian')
+y_hat_lasso_boot<-predict(fit_lasso_boot,newx=X_b,s=fit_lasso_boot$lambda.min)[1]
+mse_hat_loocv_boot[b] <- mean((y_hat_lasso_boot - Y_b) ^ 2)
+}
+SD_MSE_boot<-mean(mse_hat_loocv_boot)
+SD_MSE_boot
+SD_MSE_boot<-sd(mse_hat_loocv_boot)
+SD_MSE_boot
+fit_lasso_final <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+fit_lasso_final$beta[, 1]
+rm(list=ls())
+DTA <- read.csv("happiness.csv")
+n <- nrow(DTA)
+Y<-DTA$Dystopia
+X<-as.matrix(DTA[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+colnames(DTA) <- c("Country", "Region", "Religion", "Religious",
+"Economy", "Family", "Health", "Freedom", "Trust", "Generosity",
+"Dystopia")
+X<-as.matrix(DTA[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+fit_lasso_cv<-cv.glmnet(X,Y,family='gaussian')
+fit_lasso_cv$cvm
+fit_lasso_cv$lambda
+fit_lasso_cv$lambda.min
+fit_lasso_cv$lambda.min
+fit_lasso_cv$nzero
+fit_lasso <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+fit_lasso$beta
+head(fit_lasso$beta)
+fit_lasso_final$beta[, 1]
+Y<-DTA$Dystopia
+X<-as.matrix(DTA[, c("Economy", "Family", "Health", "Freedom", "Trust",
+"Generosity")])
+fit_lasso_cv<-cv.glmnet(X,Y,family='gaussian')
+fit_lasso <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+y_hat_lasso <- predict(fit_lasso, newx = X, s = fit_lasso_cv$lambda.min)
+MSE_lasso_loocv <- numeric(n)
+for(i in 1:n) {
+## Temporary train / test split.
+X_te<-X[i, ,drop=FALSE]
+Y_te<-Y[i]
+X_tr<-X[-i,]
+Y_tr<-Y[-i]
+fit_lasso_loocv<-glmnet(X_tr,Y_tr,family = 'gaussian',lambda=fit_lasso_cv$lambda)
+y_hat_lasso_loocv<-predict(fit_lasso_loocv,newx=X_te,s=fit_lasso_loocv$lambda.min)[1]
+MSE_lasso_loocv[i]<-(y_hat_lasso_loocv-Y_te)^2
+}
+MSE_lasso<-mean(MSE_lasso_loocv)
+B <- 1000
+mse_hat_loocv_boot <- numeric(B)
+for(b in 1:B) {
+## Sample WR from training data.
+DTA_boot_b <- sample(1:n, replace = TRUE)
+Y_b<-Y[DTA_boot_b]
+X_b<-X[DTA_boot_b,]
+fit_lasso_boot<-glmnet(X_b,Y_b,lambda=fit_lasso_cv$lambda,family='gaussian')
+y_hat_lasso_boot<-predict(fit_lasso_boot,newx=X_b,s=fit_lasso_boot$lambda.min)[1]
+mse_hat_loocv_boot[b] <- mean((y_hat_lasso_boot - Y_b) ^ 2)
+}
+mse_hat_loocv_boot
+SD_MSE_boot<-sd(mse_hat_loocv_boot)
+SD_MSE_boot
+fit_lasso_cv$lambda
+fit_lasso_final$beta[, 1]
+fit_lasso_final <- glmnet(X, Y, lambda = fit_lasso_cv$lambda, family = "gaussian")
+fit_lasso_final
+fit_lasso_final$beta[, 1]
+rm(lisst=ls())
+rm(list=ls())
+setwd("~/Downloads/Delivery_Files/test")
+list.files
+list.files()
+df<-read_csv("1_1PP.txt",delim='\t')
+df1<-read_csv("1_1PP.txt",delim="\t")
+df1<-read_csv("1_1PP.txt",delim="/t")
+df1<-read_csv("1_1PP.txt",delim="\t")
+df1<-read_csv("1_1PP.txt",sep="\t")
+df1<-read_csv("1_1PP.txt",sep=" ")
+library(readr)
+X1_1PP <- read_csv("~/Downloads/Delivery_Files/test/1_1PP.txt",sep= "\t" )
+View(X1_1PP)
+library(readr)
+X4HB <- read_csv("~/Downloads/Delivery_Files/test/4HB.txt" , sep='\t')
+View(X4HB)
+df1<-read.table("1_1PP.txt",sep="\t ")
+df1<-read.table("1_1PP.txt",sep="\t")
+df1
+View(df1)
+df1<-read_csv("1_1PP.txt",sep="\t")
+df1<-read_csv("1_1PP.txt")
+View(df1)
+df1<-read_csv("1_1PP.txt",sep=" ")
+df1<-read_csv("1_1PP.txt",sep="\t",header=TRUE)
+df1<-read.csv("1_1PP.txt",sep="\t",header=TRUE)
+View(df1)
+df2<-read.csv("6SB.txt",sep="\t",header=TRUE)
+df1<-load("1_1PP.txt",sep="\t",header=TRUE)
+df1<-load("1_1PP.txt")
+new<-rbind(df1,df2)
+new<-rbind(df1[,1],df2[,1])
+View(new)
+x <- scan("1_1PP.txt", sep="\t")
+scan
+x <- scan("1_1PP.txt", sep="\t")
+x <- scan("1_1PP.txt", sep="\t",header=TRUE)
+df1<-read.csv("1_1PP.txt",sep="\t",header=TRUE)
+df2<-read.csv("4MH.txt",sep="\t",header=TRUE)
+df1<-read.csv("1_1PP.txt",sep="\t",header=TRUE)
+df2<-read.csv("4MH.txt",sep="\t",header=TRUE)
+new<-rbind(df1[,1],df2[,1])
+View(new)
+Reduce(union, list(df1,df2))
+head(df1)
+a<-split(df, list(df1$Gene))
+Map(cbind, split.default(df1[1], names(df1)[1]), OBS=df1[1])
+a<-Map(cbind, split.default(df1[1], names(df1)[1]), OBS=df1[1])
+head(a)
+b<-Map(cbind, split.default(df2[1], names(df2)[1]), OBS=df2[1])
+length(a)
+length(b)
+union(a,b)
+rm(list=ls())
+df<-read.csv("merge.csv")
+df<-read.csv("merge_count.csv")
+filenames=list.files(path='C:\\Users\\luyeq\\Dropbox\\3. courses in TAMU\\Project\\DATA', full.names=TRUE)
+datalist = lapply(filenames, function(x){read.delim(file=x,header=T)})
+merged <- Reduce(function(x,y) {merge(x,y, by='Gene', all=TRUE)}, datalist)
+df<-read.csv("merged_count.csv")
+setwd("Users/darpitdave/Downloads")
+getwd()
+setwd("/Users/darpitdave/Downloads/RNA_Seq")
+df<-read.csv("merged_count.csv")
+View(df)
+colnames(df)
+df<-df[,2:ncol(df)]
+colnames(df)
+mapping<-read.csv("mappings.csv")
+mapping<-read.csv("mappings.csv")
+getwd()
+mapping<-read.csv("mapping.csv")
+mappings
+mapping
+View(mapping)
+mapping<-mapping[,2:3]
+mapping
+mapping<-mapping[1:34,]
+mapping
+mapping<-mapping[groupby(treatment)]
+mapping<-mapping[order(Treatment)]
+mapping<-mapping[order(mapping$Treatment)]
+mapping<-mapping[,order(mapping$Treatment)]
+mapping<-mapping[order(mapping$Treatment),]
+colnames()
+colnames(df)
+df<-df[order(mapping$Samples)]
+colnames(df)
+list<-mapping$Samples[1:12,]
+list<-mapping$Samples[1:12,]
+View(mapping)
+list<-mapping[1:12]
+list<-mapping[1:12,]
+list
+list<-mapping[1:12,1]
+list
+df1<-df[c(list)]
+View(df1)
+table(mapping)
+table(mapping$Treatment)
+chronic_hepatits<-mapping[1:22,1]
+control<-mapping[23:34,1]
+VIew(df)
+View(d)
+View(df)
+df1<-df[c(control,chronic_hepatits)]
+df1<-df[,c(control,chronic_hepatits)]
+df1<-df[c(control,chronic_hepatits)]
+control
+colnames(df)
+length(control)
+df1<-df[c(control)]
+df1<-df[c(lisst)]
+df1<-df[c(list)]
+df1<-df[c(chronic_hepatits)]
+main_list<-colnames(df)
+mapply(function(x, y) x[x[, 2] %in% y,], control, main_list, SIMPLIFY=FALSE)
+colnames(df)
+View(mapping)
+df1<-df[c(1,3,5,7,14,15,16,18,19,20,22,24,27,1,2,3,6,8,9,10,11,12,13,17,21,23,25,26,28)]
+colnames(df)
+colnames(df1)
+df1<-df[c(1,3,5,7,14,15,16,18,19,20,22,24,27,2,3,6,8,9,10,11,12,13,17,21,23,25,26,28)]
+View(df1)
+colnames(df1) <- c(paste("Control_", 2:13, sep = ""), paste("Chronic_", 14:28, sep = ""))
+colnames(df1)
+df1<-df[c(1,3,5,7,14,15,16,18,19,20,22,24,27,2,3,6,8,9,10,11,12,13,17,21,23,25,26,28)]
+colnames(df1[,2:ncol(df1)]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:22, sep = ""))
+colnames(df1)
+colnames(df1[,2:ncol(df1)]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1)
+ncol(df1)
+28-1
+15+!2
+15+12
+colnames(df1[2])
+colnames(df1)
+colnames(df1[2:ncol(df1)]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1)
+colnames(df1) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1)
+colnames(df1[2:28])
+df1<-df[c(1,3,5,7,14,15,16,18,19,20,22,24,27,2,3,6,8,9,10,11,12,13,17,21,23,25,26,28)]
+colnames(df1)
+colnames(df1[2:28]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1)
+colnames(df1[2]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1[2:12]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1[2:27]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1[2:28]) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1)
+df1<-df[,2:ncol(df1)]
+colnames(df1) <- c(paste("Control_", 1:12, sep = ""), paste("Chronic_", 1:15, sep = ""))
+colnames(df1)
+df1<-cbind(df$Gene,df1)
+View(df1)
+View(df)
+View(df)
+write.csv(df1,filename="dataset_modified_columns")
+write.csv(df1,filename="dataset_modified_columns.csv")
+write.csv(df1,file="dataset_modified_columns.csv")
+getwd()
+setwd("/Users/darpitdave/Downloads/RNA_Seq/test")
+setwd("/Users/darpitdave/Downloads/RNA_Seq/Delivery_Files/test")
+files<-c("1_1PP.txt","1WV.txt","4MH.txt")
+readDGE(files,columns=c(1))
+readDGE(files)
+rg<-readDGE(files)
+heads(rg)
+head(rg)
+files<-c("1_1PP.txt","1WV.txt")
+rg<-readDGE(files)
+head(rg)
+savehistory(file="rna_project")

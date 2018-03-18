@@ -1,0 +1,9 @@
+cfa-mir-103-2,mature,MIMAT0006687 306 0.05%
+cfa-mir-103-1,mature,MIMAT0006687 299 0.05%
+cfa-mir-502,mature,MIMAT0006761 132 0.02%
+cfa-mir-500,mature,MIMAT0006759 104 0.02%
+cfa-mir-107,mature,MIMAT0006666 69 0.01%
+cfa-mir-500,mature,MIMAT0006759;cfa-mir-502,mature,MIMAT0006761 51 0.01%
+cfa-mir-103-2,mature,MIMAT0006687;cfa-mir-107,mature,MIMAT0006666 31 0.01%
+cfa-mir-103-1,mature,MIMAT0006687;cfa-mir-107,mature,MIMAT0006666 20 0.00%
+cfa-mir-133a,mature,MIMAT0009834;cfa-mir-133c,mature,MIMAT0009833 1 0.00%
